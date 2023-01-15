@@ -4,13 +4,13 @@ require("dotenv").config()
 
 async function main() {
     const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
-    // const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-    const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf-8")
-    let wallet = new ethers.Wallet.fromEncryptedJsonSync(
-        encryptedJson,
-        process.env.PRIVATE_KEY_PASSWORD
-    )
-    wallet = await wallet.connect(provider)
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+    // const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf-8")
+    // let wallet = new ethers.Wallet.fromEncryptedJsonSync(
+    //     encryptedJson,
+    //     process.env.PRIVATE_KEY_PASSWORD
+    // )
+    // wallet = await wallet.connect(provider)
 
     const abi = fs.readFileSync(
         "./SimpleStorage_sol_SimpleStorage.abi",
@@ -23,6 +23,9 @@ async function main() {
     const contractFactory = new ethers.ContractFactory(abi, binary, wallet)
     console.log("Starting to deploy a contract :)")
     const contract = await contractFactory.deploy()
+
+    console.log(`contract address : ${contract.address}`)
+
     const transactionReceipt = await contract.deployTransaction.wait(1)
 
     // nonce = await wallet.getTransactionCount();
